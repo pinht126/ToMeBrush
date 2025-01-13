@@ -176,3 +176,5 @@ tags
 
 # wandb
 wandb
+metrics/ImageReward/ImageReward.pt
+examples/images-20250102T050307Z-001.zip
