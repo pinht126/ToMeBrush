@@ -89,6 +89,7 @@ After that, you can install required packages thourgh:
 ```
 cd examples/brushnet/
 pip install -r requirements.txt
+pip install tomesd
 ```
 
 ### Data Download ⬇️
