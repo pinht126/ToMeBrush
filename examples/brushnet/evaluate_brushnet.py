@@ -24,6 +24,11 @@ import hpsv2
 import ImageReward as RM
 import math
 from transformers import AutoProcessor, AutoModel
+import tomesd
+def set_seed(seed):
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 def rle2mask(mask_rle, shape): # height, width
     starts, lengths = [np.asarray(x, dtype=int) for x in (mask_rle[0:][::2], mask_rle[1:][::2])]
@@ -53,7 +58,7 @@ class MetricsCalculator:
         self.aesthetic_model.eval()
         self.clip_model, _, self.clip_preprocess = open_clip.create_model_and_transforms('ViT-L-14', pretrained='openai')
         # image reward model
-        self.imagereward_model = RM.load("ImageReward-v1.0")
+        self.imagereward_model = RM.load("metrics/ImageReward/ImageReward.pt")
  
 
     def calculate_image_reward(self,image,prompt):
@@ -150,10 +155,10 @@ parser.add_argument('--brushnet_ckpt_path',
                     default="data/ckpt/segmentation_mask_brushnet_ckpt")
 parser.add_argument('--base_model_path', 
                     type=str, 
-                    default="runwayml/stable-diffusion-v1-5")
+                    default="data/ckpt/realisticVisionV60B1_v51VAE")
 parser.add_argument('--image_save_path', 
                     type=str, 
-                    default="runs/evaluation_result/BrushBench/brushnet_segmask/inside")
+                    default="runs/tome_evaluation_result/BrushBench/brushnet_segmask/inside/blended")
 parser.add_argument('--mapping_file', 
                     type=str, 
                     default="data/BrushBench/mapping_file.json")
@@ -165,9 +170,11 @@ parser.add_argument('--mask_key',
                     default="inpainting_mask")
 parser.add_argument('--blended', action='store_true')
 parser.add_argument('--paintingnet_conditioning_scale', type=float,default=1.0)
-
+parser.add_argument('--scale1', type=float, default=0)
+parser.add_argument('--scale2', type=float, default=0)
+parser.add_argument('--seed', type=int, default=2)
 args = parser.parse_args()
-
+#set_seed(args.seed)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 base_model_path = args.base_model_path
@@ -177,7 +184,6 @@ brushnet = BrushNetModel.from_pretrained(brushnet_path, torch_dtype=torch.float1
 pipe = StableDiffusionBrushNetPipeline.from_pretrained(
     base_model_path, brushnet=brushnet, torch_dtype=torch.float16,low_cpu_mem_usage=False
 )
-
 # speed up diffusion process with faster scheduler and memory optimization
 pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
 # remove following line if xformers is not installed or when using Torch 2.0.
@@ -196,6 +202,7 @@ for key, item in mapping_file.items():
    
     init_image = cv2.imread(os.path.join(args.base_dir,image_path))[:,:,::-1]
     mask_image = rle2mask(mask,(512,512))[:,:,np.newaxis]
+    tomesd.apply_patch(pipe, mask_path=mask_image, ratio1=args.scale1, ratio2=args.scale2, mask=True)
     init_image = init_image * (1-mask_image)
 
     init_image = Image.fromarray(init_image).convert("RGB")
@@ -203,7 +210,7 @@ for key, item in mapping_file.items():
 
     generator = torch.Generator(device).manual_seed(1234)
 
-    save_path= os.path.join(args.image_save_path,image_path) 
+    save_path= os.path.join(f'{args.image_save_path}/{args.scale1}_{args.scale2}/{args.seed}',image_path) 
     masked_image_save_path=save_path.replace(".jpg","_masked.jpg")
 
     if os.path.exists(save_path) and os.path.exists(masked_image_save_path):
@@ -239,7 +246,7 @@ for key, item in mapping_file.items():
     image.save(save_path)
     init_image.save(masked_image_save_path)
 
-# evaluation
+#evaluation
 evaluation_df = pd.DataFrame(columns=['Image ID','Image Reward', 'HPS V2.1', 'Aesthetic Score', 'PSNR', 'LPIPS', 'MSE', 'CLIP Similarity'])
 
 metrics_calculator=MetricsCalculator(device)
@@ -253,7 +260,7 @@ for key, item in mapping_file.items():
     src_image_path = os.path.join(args.base_dir, image_path)
     src_image = Image.open(src_image_path).resize((512,512))
 
-    tgt_image_path=os.path.join(args.image_save_path, image_path)
+    tgt_image_path=os.path.join(f'{args.image_save_path}/{args.scale1}_{args.scale2}/{args.seed}', image_path)
     tgt_image = Image.open(tgt_image_path).resize((512,512))
 
     evaluation_result=[key]
@@ -292,7 +299,7 @@ for key, item in mapping_file.items():
 print("The averaged evaluation result:")
 averaged_results=evaluation_df.mean(numeric_only=True)
 print(averaged_results)
-averaged_results.to_csv(os.path.join(args.image_save_path,"evaluation_result_sum.csv"))
-evaluation_df.to_csv(os.path.join(args.image_save_path,"evaluation_result.csv"))
+averaged_results.to_csv(os.path.join(f'{args.image_save_path}/{args.scale1}_{args.scale2}/{args.seed}',"evaluation_result_sum.csv"))
+evaluation_df.to_csv(os.path.join(f'{args.image_save_path}/{args.scale1}_{args.scale2}/{args.seed}',"evaluation_result.csv"))
 
 print(f"The generated images and evaluation results is saved in {args.image_save_path}")
