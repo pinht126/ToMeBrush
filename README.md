@@ -7,6 +7,7 @@ Keywords: Image Inpainting, Diffusion Models, Image Generation
 > [Xuan Ju](https://github.com/juxuan27)<sup>12</sup>, [Xian Liu](https://alvinliu0.github.io/)<sup>12</sup>, [Xintao Wang](https://xinntao.github.io/)<sup>1*</sup>, [Yuxuan Bian](https://scholar.google.com.hk/citations?user=HzemVzoAAAAJ&hl=zh-CN&oi=ao)<sup>2</sup>, [Ying Shan](https://www.linkedin.com/in/YingShanProfile/)<sup>1</sup>, [Qiang Xu](https://cure-lab.github.io/)<sup>2*</sup><br>
 > <sup>1</sup>ARC Lab, Tencent PCG <sup>2</sup>The Chinese University of Hong Kong <sup>*</sup>Corresponding Author
 
+![image](https://github.com/user-attachments/assets/f1f27199-6aa9-49d1-99ef-f0b03dbb3d4f)
 
 <p align="center">
   <a href="https://tencentarc.github.io/BrushNet/">🌐Project Page</a> |
@@ -266,6 +267,11 @@ The `--mask_key` indicates which kind of mask to use, `inpainting_mask` for insi
 
 *Noted that you need to ignore the nsfw detector in `src/diffusers/pipelines/brushnet/pipeline_brushnet.py#1261` to get the correct evaluation results. Moreover, we find different machine may generate different images, thus providing the results on our machine [here](https://drive.google.com/drive/folders/1dK3oIB2UvswlTtnIS1iHfx4s57MevWdZ?usp=sharing).*
 
+
+## Result (ToMeBrush)
+Comparison of results without applying the blending operation
+![image](https://github.com/user-attachments/assets/cd118ee1-24ae-4a82-abe8-1cce22734259)
+Our model demonstrated superior performance compared to existing models on BrushBench in all metrics except for LPIPS. Under the SDXL framework, higher resolutions exhibited better efficiency in terms of memory usage and speed.
 
 ## 🤝🏼 Cite Us
 
