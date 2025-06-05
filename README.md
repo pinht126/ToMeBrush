@@ -1,5 +1,7 @@
 # Token Merging for BrushNet
 
+![image](https://github.com/user-attachments/assets/dd32e198-5ef0-4c9a-b28e-dcae9a7969c2)
+
 This repository contains the implementation of the ECCV2024 paper "BrushNet: A Plug-and-Play Image Inpainting Model with Decomposed Dual-Branch Diffusion"
 
 Keywords: Image Inpainting, Diffusion Models, Image Generation
