@@ -1,52 +1,21 @@
 # Token Merging for BrushNet
 
-![image](https://github.com/user-attachments/assets/dd32e198-5ef0-4c9a-b28e-dcae9a7969c2)
-
 BrushNet is a diffusion-based text-guided image inpainting model designed with reference to the ControlNet architecture. The inpainting model generates new content within the masked regions based on the text input, while preserving the non-masked regions to remain identical to the input image.
 
-In practice, the model first generates the entire image such that the non-masked regions closely resemble the input, and then overlays the inpainted result on top of the original image using the mask. This raises the question: is generating the non-masked regions necessary?
+In practice, the model first generates the entire image such that the non-masked regions closely resemble the input, and then overlays the inpainted result on top of the original image using the mask. 
+
+![image](https://github.com/user-attachments/assets/dd32e198-5ef0-4c9a-b28e-dcae9a7969c2)
+
+
+# This raises the question: is generating the non-masked regions necessary?
+While it may seem redundant, the generation of the non-masked regions is not meaningless. Changes in these areas can affect the overall composition and coherence of the final image. However, their importance is not as critical as that of the masked regions.
+
+Therefore, we aim to reduce the computational overhead for the non-masked regions using Token Merging for Stable Diffusion. Token Merging, which merges 50% of tokens, has been shown to reduce computation without sacrificing generation quality. By applying a higher merging ratio to the non-mask regions, we can significantly reduce the overall computational load.
+
+Based on this idea, we apply a region-aware token merging strategy to the inpainting model, assigning different merging ratios to masked and non-masked areas.
 
 ![image](https://github.com/user-attachments/assets/f1f27199-6aa9-49d1-99ef-f0b03dbb3d4f)
 
-<p align="center">
-  <a href="https://tencentarc.github.io/BrushNet/">🌐Project Page</a> |
-  <a href="https://arxiv.org/abs/2403.06976">📜Arxiv</a> |
-  <a href="https://forms.gle/9TgMZ8tm49UYsZ9s5">🗄️Data</a> |
-  <a href="https://drive.google.com/file/d/1IkEBWcd2Fui2WHcckap4QFPcCI0gkHBh/view">📹Video</a> |
-  <a href="https://huggingface.co/spaces/TencentARC/BrushNet">🤗Hugging Face Demo</a> |
-</p>
-
-
-
-**📖 Table of Contents**
-
-
-- [BrushNet](#brushnet)
-  - [TODO](#todo)
-  - [🛠️ Method Overview](#️-method-overview)
-  - [🚀 Getting Started](#-getting-started)
-    - [Environment Requirement 🌍](#environment-requirement-)
-    - [Data Download ⬇️](#data-download-️)
-  - [🏃🏼 Running Scripts](#-running-scripts)
-    - [Training 🤯](#training-)
-    - [Inference 📜](#inference-)
-    - [Evaluation 📏](#evaluation-)
-  - [🤝🏼 Cite Us](#-cite-us)
-  - [💖 Acknowledgement](#-acknowledgement)
-
-
-## TODO
-
-
-- [x] Release trainig and inference code
-- [x] Release checkpoint (sdv1.5)
-- [x] Release checkpoint (sdxl). Sadly, I only have V100 for training this checkpoint, which can only train with a batch size of 1 with a slow speed. The current ckpt is only trained for a small step number thus perform not well. But fortunately, [yuanhang](https://github.com/yuanhangio) volunteer to help training a better version. Please stay tuned! Thank [yuanhang](https://github.com/yuanhangio) for his effort!
-- [x] Release evluation code
-- [x] Release gradio demo
-- [x] Release comfyui demo. Thank [nullquant](https://github.com/nullquant) ([ConfyUI-BrushNet](https://github.com/nullquant/ComfyUI-BrushNet)) and [kijai](https://github.com/kijai) ([ComfyUI-BrushNet-Wrapper](https://github.com/kijai/ComfyUI-BrushNet-Wrapper)) for helping!
-- [x] Release [trainig data](https://huggingface.co/datasets/random123123/BrushData). Thank [random123123](https://huggingface.co/random123123) for helping!
-- [x] We use BrushNet to participate in CVPR2024 GenAI Media Generation Challenge Workshop and get top prize! The solution is provided in [InstructionGuidedEditing](InstructionGuidedEditing)
-- [x] Release a new version of checkpoint (sdxl).
 
 ## 🛠️ Method Overview
 
