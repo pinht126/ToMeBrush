@@ -2,7 +2,7 @@
 
 BrushNet is a diffusion-based text-guided image inpainting model designed with reference to the ControlNet architecture. The inpainting model generates new content within the masked regions based on the text input, while preserving the non-masked regions to remain identical to the input image.
 
-In practice, the model first generates the entire image such that the non-masked regions closely resemble the input, and then overlays the inpainted result on top of the original image using the mask. 
+In practice, the model first generates the entire image such that the non-masked regions closely resemble the input, and then overlays the inpainted result on top of the original image using the mask(blending operation). 
 
 ![image](https://github.com/user-attachments/assets/dd32e198-5ef0-4c9a-b28e-dcae9a7969c2)
 
