@@ -2,12 +2,9 @@
 
 ![image](https://github.com/user-attachments/assets/dd32e198-5ef0-4c9a-b28e-dcae9a7969c2)
 
-This repository contains the implementation of the ECCV2024 paper "BrushNet: A Plug-and-Play Image Inpainting Model with Decomposed Dual-Branch Diffusion"
+BrushNet is a diffusion-based text-guided image inpainting model designed with reference to the ControlNet architecture. The inpainting model generates new content within the masked regions based on the text input, while preserving the non-masked regions to remain identical to the input image.
 
-Keywords: Image Inpainting, Diffusion Models, Image Generation
-
-> [Xuan Ju](https://github.com/juxuan27)<sup>12</sup>, [Xian Liu](https://alvinliu0.github.io/)<sup>12</sup>, [Xintao Wang](https://xinntao.github.io/)<sup>1*</sup>, [Yuxuan Bian](https://scholar.google.com.hk/citations?user=HzemVzoAAAAJ&hl=zh-CN&oi=ao)<sup>2</sup>, [Ying Shan](https://www.linkedin.com/in/YingShanProfile/)<sup>1</sup>, [Qiang Xu](https://cure-lab.github.io/)<sup>2*</sup><br>
-> <sup>1</sup>ARC Lab, Tencent PCG <sup>2</sup>The Chinese University of Hong Kong <sup>*</sup>Corresponding Author
+In practice, the model first generates the entire image such that the non-masked regions closely resemble the input, and then overlays the inpainted result on top of the original image using the mask. This raises the question: is generating the non-masked regions necessary?
 
 ![image](https://github.com/user-attachments/assets/f1f27199-6aa9-49d1-99ef-f0b03dbb3d4f)
 
