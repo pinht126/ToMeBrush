@@ -162,4 +162,5 @@ The `--mask_key` indicates which kind of mask to use, `inpainting_mask` for insi
 Comparison of results without applying the blending operation
 ![image](https://github.com/user-attachments/assets/cd118ee1-24ae-4a82-abe8-1cce22734259)
 Our model demonstrated superior performance compared to existing models on BrushBench in all metrics except for LPIPS. Under the SDXL framework, higher resolutions exhibited better efficiency in terms of memory usage and speed.
+Compared to BrushNet, ToMeBrush achieves a 5.86% improvement in inference speed, reduces the average processing time by 0.29 seconds, and lowers memory usage by 0.06 GB.
 
